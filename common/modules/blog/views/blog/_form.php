@@ -19,12 +19,11 @@ use common\modules\blog\models\Tag;
     ]); ?>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-    <?php echo \yii\helpers\Url::to(['save-redactor-img', 'sub' => 'blog'])?>
     <?php echo $form->field($model, 'text')->widget(\vova07\imperavi\Widget::className(), [
         'settings' => [
             'lang' => 'ru',
             'minHeight' => 200,
-            'imageUpload' => \yii\helpers\Url::to(['save-image', 'sub' => 'blog']),
+            'imageUpload' => \yii\helpers\Url::to(['save-redactor-img', 'sub' => 'blog']),
             'plugins' => [
                 'clips',
                 'fullscreen',
@@ -69,12 +68,12 @@ use common\modules\blog\models\Tag;
             'multiple'=>true
         ],
         'pluginOptions' => [
-            'deleteUrl' => \yii\helpers\Url::to(['/blog/delete-img']),
+            'deleteUrl' => \yii\helpers\Url::to(['delete-img']),
             'initialPreview' => $model->imageLinks,
             'initialPreviewAsData' => true,
             'overwriteInitial' => false,
             'initialPreviewConfig' => $model->imageLinksData,
-            'uploadUrl' => \yii\helpers\Url::to(['/site/save-img']),
+            'uploadUrl' => \yii\helpers\Url::to(['save-img']),
             'uploadExtraData' => [
                 'ImageManager[class]' => $model->formName(),
                 'ImageManager[item_id]' => $model->id,
@@ -83,7 +82,7 @@ use common\modules\blog\models\Tag;
         ],
         'pluginEvents' => [
             'filesorted' => new \yii\web\JsExpression('function(event, params){
-                  $.post("'.\yii\helpers\Url::toRoute(["/blog/sort-image","id"=>$model->id]).'",{sort: params});
+                  $.post("'.\yii\helpers\Url::toRoute(["sort-image","id"=>$model->id]).'",{sort: params});
             }')
         ]
     ]) ?>

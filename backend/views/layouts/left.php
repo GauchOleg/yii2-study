@@ -33,6 +33,8 @@
                     ['label' => 'Menu Yii2', 'options' => ['class' => 'header']],
                     ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
                     ['label' => 'Блог', 'icon' => 'pencil', 'url' => ['/blog']],
+                    ['label' => 'Склад', 'icon' => 'pencil', 'url' => ['/sklad']],
+                    ['label' => 'Товары', 'icon' => 'pencil', 'url' => ['/product']],
                     ['label' => 'Тэги', 'icon' => 'tags', 'url' => ['/blog/tag']],
                     ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
                     ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],

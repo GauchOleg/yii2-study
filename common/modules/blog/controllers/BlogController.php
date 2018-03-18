@@ -6,7 +6,11 @@ use common\models\ImageManager;
 use Yii;
 use common\modules\blog\models\Blog;
 use common\modules\blog\models\BlogSearch;
+use yii\base\DynamicModel;
+use yii\base\Response;
+use yii\helpers\FileHelper;
 use yii\helpers\Url;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
@@ -29,7 +33,8 @@ class BlogController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'delete-image' => ['POST'],
-                    'sort-image' => ['POST']
+                    'sort-image' => ['POST'],
+                    'save-img' => ['POST'],
                 ],
             ],
         ];
@@ -170,6 +175,100 @@ class BlogController extends Controller
             return true;
         } else {
             return false;
+        }
+    }
+
+    public function actionSaveImg() {
+        $this->enableCsrfValidation = false;
+        if (Yii::$app->request->isPost) {
+            $post = Yii::$app->request->post();
+            $dir = Yii::getAlias('@images') . '/' . $post['ImageManager']['class'] . '/';
+            $start = strpos($dir,'uploads');
+            $dir = substr($dir,$start);
+
+            if (!file_exists($dir)) {
+                FileHelper::createDirectory($dir);
+            }
+
+            $result_link = Url::home(true) . $dir;
+            $file = UploadedFile::getInstanceByName('ImageManager[attachment]');
+
+            $model = new ImageManager();
+            $model->name = strtotime('now') . '_' . Yii::$app->security->generateRandomString(6) . '.' . $file->extension;
+            $model->alt = strtotime('now') . '_' . Yii::$app->security->generateRandomString(6) . '.' . $file->extension;
+            $model->load($post);
+            if ($model->validate()) {
+                $model->save();
+            }
+
+            if ($model->hasErrors()) {
+                $result = [
+                    'error' => $model->getFirstError('file'),
+                ];
+            } else {
+                if ($file->saveAs($dir . $model->name)) {
+                    /* resize image */
+                    $imagic = Yii::$app->image->load($dir . $model->name);
+                    $imagic->resize(800, NULL, Yii\image\drivers\Image::PRECISE)->save($dir. $model->name, 85);
+                    /* resize image end */
+                    $result = [
+                        'filelink' => $result_link . $model->name,
+                        'filename' => $model->name,
+                    ];
+                } else {
+                    $result = [
+                        'error' => 'Ошибка'
+                    ];
+                }
+            }
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return $result;
+        } else {
+            throw new BadRequestHttpException('Only POST is allowed');
+        }
+    }
+
+    public function actionSaveRedactorImg($sub = 'main') {
+        $this->enableCsrfValidation = false;
+        if (Yii::$app->request->isPost) {
+            $dir = Yii::getAlias('@images') . '/' . $sub . '/';
+            $start = strpos($dir,'uploads');
+            $dir = substr($dir,$start);
+
+            if (!file_exists($dir)) {
+                FileHelper::createDirectory($dir);
+            }
+
+            $result_link = Url::home(true) . $dir;
+            $file = UploadedFile::getInstanceByName('file');
+            $model = new DynamicModel(compact('file'));
+//            $model->addRule('file','image')->validate();
+
+            if ($model->hasErrors()) {
+                $result = [
+                    'error' => $model->getFirstError('file'),
+                ];
+            } else {
+                $model->file->name = strtotime('now') . '_' . Yii::$app->security->generateRandomString(6) . '.' . $model->file->extension;
+                if ($model->file->saveAs($dir . $model->file->name)) {
+                    /* resize image */
+                    $imagic = Yii::$app->image->load($dir . $model->file->name);
+                    $imagic->resize(800, NULL, Yii\image\drivers\Image::PRECISE)->save($dir. $model->file->name, 85);
+                    /* resize image end */
+                    $result = [
+                        'filelink' => $result_link . $model->file->name,
+                        'filename' => $model->file->name,
+                    ];
+                } else {
+                    $result = [
+                        'error' => Yii::t('vova07/imperavi', 'ERROR_CAN_NOT_UPLOAD_FILE')
+                    ];
+                }
+            }
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return $result;
+        } else {
+            throw new BadRequestHttpException('Only POST is allowed');
         }
     }
 }
