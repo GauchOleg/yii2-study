@@ -19,12 +19,12 @@ use common\modules\blog\models\Tag;
     ]); ?>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-
+    <?php echo \yii\helpers\Url::to(['save-redactor-img', 'sub' => 'blog'])?>
     <?php echo $form->field($model, 'text')->widget(\vova07\imperavi\Widget::className(), [
         'settings' => [
             'lang' => 'ru',
             'minHeight' => 200,
-            'imageUpload' => \yii\helpers\Url::to(['site/save-redactor-img', 'sub' => 'blog']),
+            'imageUpload' => \yii\helpers\Url::to(['save-image', 'sub' => 'blog']),
             'plugins' => [
                 'clips',
                 'fullscreen',
