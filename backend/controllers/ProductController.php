@@ -124,4 +124,38 @@ class ProductController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionRole() {
+
+//        $admin = Yii::$app->authManager->createRole('admin');
+//        $admin->description = 'Администратор';
+//        Yii::$app->authManager->add($admin);
+//
+//        $user = Yii::$app->authManager->createRole('user');
+//        $user->description = 'Пользователь';
+//        Yii::$app->authManager->add($user);
+//
+//        $ban = Yii::$app->authManager->createRole('banned');
+//        $ban->description = 'Тварь';
+//        Yii::$app->authManager->add($ban);
+//
+//        $manager = Yii::$app->authManager->createRole('manager');
+//        $manager->description = 'Менеджер';
+//        Yii::$app->authManager->add($manager);
+
+//        $permit = Yii::$app->authManager->createPermission('canAdmin');
+//        $permit->description = 'Право на на вход в адимнку';
+//        Yii::$app->authManager->add($permit);
+
+//        $role_a = Yii::$app->authManager->getRole('admin');
+//        $role_m = Yii::$app->authManager->getRole('manager');
+//        $permission = Yii::$app->authManager->getPermission('canAdmin');
+//        Yii::$app->authManager->addChild($role_a, $permission);
+//        Yii::$app->authManager->addChild($role_m, $permission);
+
+//        $userRole = Yii::$app->authManager->getRole('admin');
+//        Yii::$app->authManager->assign($userRole, Yii::$app->user->getId());
+
+        return 'ready';
+    }
 }
